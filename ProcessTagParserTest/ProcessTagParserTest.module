@@ -19,17 +19,12 @@ class ProcessTagParserTest extends Process {
 
 	const defaultString = "Hello {user.name}, where have you been? It's {datetime} now and we haven't seen you in two weeks.\n\nLast edit on page '{page.title}' from address {REMOTE_ADDR}";
 
-	/**
-	 * Return information about this module (required)
-	 *
-	 * @return array
-	 *
-	 */
 	static public function getModuleInfo() {
 		return array(
-			'title'   => 'Tag parser test page',
-			'summary' => 'Test the tag parser from the PW admin interface',
-			'version' => 1,
+			'title'    => 'Tag parser test page',
+			'summary'  => 'Test the tag parser from the PW admin interface',
+			'version'  => 1,
+			'installs' => 'TextformatterTagParser',
 		);
 	}
 
@@ -41,11 +36,6 @@ class ProcessTagParserTest extends Process {
 	}
 
 
-	/**
-	 * Render input form
-	 *
-	 * Previous selections are preserved.
-	 */
 	public function renderInputForm() {
 
 		// Form for fields
@@ -118,12 +108,7 @@ class ProcessTagParserTest extends Process {
 		}
 	}
 
-	/**
-	 * Module installation
-	 *
-	 * Create a page under admin "Setup" page and attach this process to it
-	 *
-	 */
+
 	public function ___install() {
 
 		// create the page our module will be assigned to
@@ -152,21 +137,13 @@ class ProcessTagParserTest extends Process {
 		$this->message(sprintf($this->_("Created page: %s - check it out!"), $page->path));
 	}
 
-	/**
-	 * Module uninstallation
-	 *
-	 * Remove the installed page
-	 *
-	 */
+
 	public function ___uninstall() {
 
-		// find the page we installed, locating it by the process field (which has the module ID)
-		// it would probably be sufficient just to locate by name, but this is just to be extra sure.
 		$moduleID = $this->modules->getModuleID($this);
 		$page = $this->pages->get("template=admin, process=$moduleID, name=" . self::pageName);
 
 		if($page->id) {
-			// if we found the page, let the user know and delete it
 			$this->message(sprintf($this->_("Deleted page: %s"), $page->path));
 			$page->delete();
 		}
