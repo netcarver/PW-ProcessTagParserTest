@@ -1,8 +1,7 @@
 <?php
 echo $inputForm;
 
-if($usedContext) {
-    echo "<p>Used selector: <b>$usedContext</b></p>";
-
-    echo $result;
+if($result) {
+    echo "<p>The parser generated...</p>";
+    echo "<pre>$result</pre>";
 }
