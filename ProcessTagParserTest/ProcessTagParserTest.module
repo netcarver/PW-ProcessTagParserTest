@@ -25,6 +25,7 @@ class ProcessTagParserTest extends Process {
 			'summary'  => 'Test the tag parser from the PW admin interface',
 			'version'  => 90,
 			'requires' => 'TextformatterTagParser',
+			'author'   => 'Netcarver',
 		);
 	}
 
