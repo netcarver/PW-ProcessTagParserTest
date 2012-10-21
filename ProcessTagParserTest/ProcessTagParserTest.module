@@ -17,13 +17,13 @@ class ProcessTagParserTest extends Process {
 
 	private $view;
 
-	const defaultString = "Hello {user.name}, where have you been? It's {datetime} now and we haven't seen you in two weeks.\n\nLast edit on page '{page.title}' from address {REMOTE_ADDR}";
+	const defaultString = "Hello {user.name>title}, where have you been? It's {datetime} now and we haven't seen you in two weeks.\n\nLast edit was on page '{page.title|name>title}' from address {REMOTE_ADDR} but you can login anytime using '{user.email|name>lower}'";
 
 	static public function getModuleInfo() {
 		return array(
 			'title'    => 'Tag parser test page',
 			'summary'  => 'Test the tag parser from the PW admin interface',
-			'version'  => 91,
+			'version'  => 92,
 			'requires' => 'TextformatterTagParser',
 			'author'   => 'Netcarver',
 		);
@@ -55,7 +55,7 @@ class ProcessTagParserTest extends Process {
 		// Input for additional context page selection (if any)
 		$field = $this->modules->get("InputfieldPageListSelect");
 		$field->label = $this->_("Additional context page to send to parser");
-		$field->description = _("The guest user will always be passed to the parser as the 'user' context, you can choose one additional 'page' context to send with it.");
+		$field->description = _("The user you are currently logged in as will always be passed to the parser as the 'user' context, you can choose one additional 'page' context to send with it.");
 		$field->attr('id+name', 'tagparsertest_context');
 		$field->showRootPage = false;
 		$field->showChildren = false;
@@ -81,7 +81,8 @@ class ProcessTagParserTest extends Process {
 		$this->renderInputForm();
 
 		$string = wire('session')->get('tagparsertest_input');
-		$context['user'] = wire()->users->get('guest');
+		#$context['user'] = wire()->users->get('guest');
+		$context['user'] = wire()->user;
 
 		if($string) {
 
