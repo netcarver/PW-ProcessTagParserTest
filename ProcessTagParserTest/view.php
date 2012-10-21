@@ -3,5 +3,5 @@ echo $inputForm;
 
 if($result) {
     echo "<p>The parser generated...</p>";
-    echo "<pre>$result</pre>";
+    echo "<pre>" . htmlspecialchars($result, ENT_QUOTES, 'UTF-8') . "</pre>";
 }
