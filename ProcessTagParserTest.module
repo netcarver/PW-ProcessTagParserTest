@@ -23,7 +23,7 @@ class ProcessTagParserTest extends Process {
 		return array(
 			'title'    => 'Tag parser test page',
 			'summary'  => 'Test the tag parser from the PW admin interface',
-			'version'  => 92,
+			'version'  => 93,
 			'requires' => 'TextformatterTagParser',
 			'author'   => 'Netcarver',
 		);
