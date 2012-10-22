@@ -4,7 +4,9 @@ Provides an admin page under the setup section that allows simple testing of the
 
 h2. Installation
 
-Copy the entire ProcessTagParserTest/ directory into your site/modules/ directory, go into the modules admin page, check for new module and install it. 
+Copy the entire ProcessTagParserTest/ directory into your site/modules/ directory, go into the modules admin page, check for new module and install it.
+
+You can also install this from the module manager (if you have it installed.)
 
 h2. Usage
 
