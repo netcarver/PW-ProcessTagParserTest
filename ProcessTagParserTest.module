@@ -64,6 +64,25 @@ class ProcessTagParserTest extends Process {
 		$field->value = wire('session')->get('tagparsertest_context');
 		$form->add($field);
 
+		$field = $this->modules->get("InputfieldCheckbox");
+		$field->label = $this->_("Show debug info?");
+		$field->attr('id+name', 'tagparsertest_debug');
+		$field->checked = wire('session')->get('tagparsertest_debug');
+		$field->columnWidth = "50";
+		$form->add($field);
+
+		$field = $this->modules->get("InputfieldSelect");
+		$field->label = $this->_("Select a transformation to apply to all replacements");
+		$field->attr('id+name', 'tagparsertest_global');
+		$field->addOption('', '', (!wire('session')->get('tagparsertest_global')) ? array('selected'=>'selected') : array() );
+		foreach( TextformatterTagParser::getTransformations() as $id => $xf ) {
+			$atts = array();
+			if(wire('session')->get('tagparsertest_global') == $xf) $atts['selected'] = 'selected';
+			$field->addOption($xf, $xf, $atts);
+		}
+		$field->columnWidth = "50";
+		$form->add($field);
+
 		// Submit button
 		$field = $this->modules->get("InputfieldButton");
 		$field->type = 'submit';
@@ -81,7 +100,6 @@ class ProcessTagParserTest extends Process {
 		$this->renderInputForm();
 
 		$string = wire('session')->get('tagparsertest_input');
-		#$context['user'] = wire()->users->get('guest');
 		$context['user'] = wire()->user;
 
 		if($string) {
@@ -91,10 +109,20 @@ class ProcessTagParserTest extends Process {
 				$context['page'] = wire()->pages->get($extra_context);
 
 			$parser = $this->modules->get("TextformatterTagParser");
-			$parser
-				->set('context', $context)
-				->format($string)
-				;
+
+			// Setup the context for the substitution of tags...
+			$parser->set('context', $context);
+
+			// Setup debug...
+			$parser->set('debug', wire('session')->get('tagparsertest_debug') );
+
+			// setup global transformation (if any)...
+			$xf = wire('session')->get('tagparsertest_global');
+			if($xf) $parser->set($xf, 'true');
+
+			// actually do the parse of tags...
+			$parser->format($string);
+
 			unset($parser);
 
 			$this->view->result = $string;
@@ -107,6 +135,8 @@ class ProcessTagParserTest extends Process {
 		if($this->input->post->tagparsertest_submit) {
 			wire('session')->set('tagparsertest_input',   $this->input->post->tagparsertest_input);
 			wire('session')->set('tagparsertest_context', $this->input->post->tagparsertest_context);
+			wire('session')->set('tagparsertest_debug',   $this->input->post->tagparsertest_debug);
+			wire('session')->set('tagparsertest_global',  $this->input->post->tagparsertest_global);
 		}
 	}
 
