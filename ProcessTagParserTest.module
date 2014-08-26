@@ -39,21 +39,23 @@ class ProcessTagParserTest extends Process {
 
 	public function renderInputForm() {
 
+		$m = $this->modules;
+
 		// Form for fields
-		$form = $this->modules->get("InputfieldForm");
+		$form = $m->get("InputfieldForm");
 		$form->attr('id', 'tagparsertest_input_form');
 		$form->attr('method', 'post');
 		$form->attr('action', './');
 
 		// Textarea for input string
-		$field = $this->modules->get("InputfieldTextarea");
+		$field = $m->get("InputfieldTextarea");
 		$field->attr('id+name', 'tagparsertest_input');
 		$field->label = $this->_("Block of text with tags to parse");
 		$field->value = (wire('session')->get('tagparsertest_input')) ? wire('session')->get('tagparsertest_input') : self::defaultString;
 		$form->add($field);
 
 		// Input for additional context page selection (if any)
-		$field = $this->modules->get("InputfieldPageListSelect");
+		$field = $m->get("InputfieldPageListSelect");
 		$field->label = $this->_("Additional context page to send to parser");
 		$field->description = _("The user you are currently logged in as will always be passed to the parser as the 'user' context, you can choose one additional 'page' context to send with it.");
 		$field->attr('id+name', 'tagparsertest_context');
@@ -64,14 +66,14 @@ class ProcessTagParserTest extends Process {
 		$field->value = wire('session')->get('tagparsertest_context');
 		$form->add($field);
 
-		$field = $this->modules->get("InputfieldCheckbox");
+		$field = $m->get("InputfieldCheckbox");
 		$field->label = $this->_("Show debug info?");
 		$field->attr('id+name', 'tagparsertest_debug');
 		$field->checked = wire('session')->get('tagparsertest_debug');
 		$field->columnWidth = "50";
 		$form->add($field);
 
-		$field = $this->modules->get("InputfieldSelect");
+		$field = $m->get("InputfieldSelect");
 		$field->label = $this->_("Select a transformation to apply to all replacements");
 		$field->attr('id+name', 'tagparsertest_global');
 		$field->addOption('', '', (!wire('session')->get('tagparsertest_global')) ? array('selected'=>'selected') : array() );
@@ -84,7 +86,7 @@ class ProcessTagParserTest extends Process {
 		$form->add($field);
 
 		// Submit button
-		$field = $this->modules->get("InputfieldButton");
+		$field = $m->get("InputfieldButton");
 		$field->type = 'submit';
 		$field->name = 'tagparsertest_submit';
 		$field->value = $this->_("Run parser");
@@ -181,4 +183,3 @@ class ProcessTagParserTest extends Process {
 		}
 	}
 }
-
