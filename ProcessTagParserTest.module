@@ -2,7 +2,7 @@
 
 /**
  * ProcessWire Tag Parser Test
- * 
+ *
  * ProcessTagParserTest provides an admin page to test the TextformatterTagParser module.
  * You get to enter a template with tags then select a simple context in which to parse it
  * and then inspect the result.
@@ -17,7 +17,7 @@ class ProcessTagParserTest extends Process {
 
 	private $view;
 
-	const defaultString = "Hello {user.name>title}, where have you been? It's {datetime} now and we haven't seen you in two weeks.\n\nLast edit was on page '{page.title|name>title}' from address {REMOTE_ADDR} but you can login anytime using '{user.email|name>lower}'";
+	const defaultString = "Hello {user.name>title}, {{is your email still {user.email>lower}|where have you been|what have you been doing|how are you|what's new}}? It's {datetime} now and we haven't seen you in two weeks.\n\nLast {{edit|revision|update|change|modification}} was on page '{page.title|name>title}' from address {REMOTE_ADDR} but you can login anytime using '{user.email|name>lower}'";
 
 	static public function getModuleInfo() {
 		return array(
@@ -64,6 +64,14 @@ class ProcessTagParserTest extends Process {
 		$field->showPath = false;
 		$field->startLabel = _("Select additional page context");
 		$field->value = wire('session')->get('tagparsertest_context');
+		$form->add($field);
+
+		$field = $m->get("InputfieldCheckbox");
+        $field->label = $this->_("Use referrer as text-spinning key?");
+        $field->description = _("Setting this uses the referrer as the text spinning key - stopping random spins for a given domain but spinning different texts for visitors from different urls.");
+        $field->note = _('Text spinning is the ability for the parser to randomly select alternative constructions for your text based on a regex-or like syntax');
+		$field->attr('id+name', 'tagparsertest_referrer_spinkey');
+		$field->checked = wire('session')->get('tagparsertest_referrer_spinkey');
 		$form->add($field);
 
 		$field = $m->get("InputfieldCheckbox");
@@ -118,6 +126,16 @@ class ProcessTagParserTest extends Process {
 			// Setup debug...
 			$parser->set('debug', wire('session')->get('tagparsertest_debug') );
 
+            // Setup spinkey...
+            $rspk = wire('session')->get('tagparsertest_referrer_spinkey');
+            if ($rspk) {
+                $ref = $_SERVER['HTTP_REFERER'];
+                $key = $parser->UrlToKey($ref);
+                $parser->set('spinkey', $key);
+            } else {
+                $parser->set('spinkey', null);
+            }
+
 			// setup global transformation (if any)...
 			$xf = wire('session')->get('tagparsertest_global');
 			if($xf) $parser->set($xf, 'true');
@@ -138,6 +156,7 @@ class ProcessTagParserTest extends Process {
 			wire('session')->set('tagparsertest_input',   $this->input->post->tagparsertest_input);
 			wire('session')->set('tagparsertest_context', $this->input->post->tagparsertest_context);
 			wire('session')->set('tagparsertest_debug',   $this->input->post->tagparsertest_debug);
+			wire('session')->set('tagparsertest_referrer_spinkey',   $this->input->post->tagparsertest_referrer_spinkey);
 			wire('session')->set('tagparsertest_global',  $this->input->post->tagparsertest_global);
 		}
 	}
@@ -148,7 +167,7 @@ class ProcessTagParserTest extends Process {
 		// create the page our module will be assigned to
 		$page = new Page();
 		$page->template = 'admin';
-		$page->name = self::pageName; 
+		$page->name = self::pageName;
 
 		// installs to the admin "Setup" menu
 		$page->parent = $this->pages->get($this->config->adminRootPageID)->child('name=setup');
@@ -158,7 +177,7 @@ class ProcessTagParserTest extends Process {
 			$this->error(sprintf($this->_("There is already a page at %s - maybe a previous installation?"), $existingPage->path));
 			throw new WireException($this->_("Page already exists"));
 		}
-		$page->process = $this; 
+		$page->process = $this;
 
 		// page title from module info
 		$info = self::getModuleInfo();
